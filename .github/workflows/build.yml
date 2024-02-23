@@ -1,0 +1,28 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Build and push frontend Docker image
+        run: |
+          docker build -t your_registry/frontend:latest frontend/
+          docker push your_registry/frontend:latest
+
+      - name: Build and push API Docker image
+        run: |
+          docker build -t your_registry/api:latest api/
+          docker push your_registry/api:latest
+
+      - name: Deploy to Kubernetes
+        run: kubectl apply -f kubernetes/
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
